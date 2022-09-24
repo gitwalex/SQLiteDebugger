@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/TablesFragment">
+
+    <fragment
+        android:id="@+id/TablesFragment"
+        android:name="com.gerwalex.sqlitedebugger.TablesFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/tables_fragment">
+
+        <action
+            android:id="@+id/action_TablesFragment_to_QueryResultFragment"
+            app:destination="@id/QueryresultFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/QueryresultFragment"
+        android:name="com.gerwalex.sqlitedebugger.QueryResultFragment"
+        android:label="@string/second_fragment_label"
+        tools:layout="@layout/queryresult_fragment">
+        <argument
+            android:name="query"
+            app:argType="string" />
+
+    </fragment>
+</navigation>
