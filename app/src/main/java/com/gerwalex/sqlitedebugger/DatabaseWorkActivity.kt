@@ -28,7 +28,7 @@ class DatabaseWorkActivity : AppCompatActivity() {
             viewModel.dbname = it.getString("DBNAME")
         } ?: run {
             intent.extras?.getString("DBNAME")?.let {
-                dbname = it
+                viewModel.dbname = it
             } ?: intent.extras?.getString("URI")?.let { uriString ->
                 val uri = Uri.parse(uriString)
                 uri.lastPathSegment?.let { dbname ->

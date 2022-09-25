@@ -18,7 +18,7 @@ import java.io.FileOutputStream
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    var dbname: String? = null
+    var dbname: String? = "battery.db"
     private lateinit var helper: DBOpenHelper
     private var job: Job? = null
     val context = getApplication<Application>()

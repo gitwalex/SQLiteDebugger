@@ -25,4 +25,8 @@ class Dao(private val db: SQLiteDatabase) {
     fun get(query: String): Cursor {
         return db.rawQuery(query, null, null)
     }
+
+    fun query(query: String): Cursor {
+        return db.rawQuery(query, null, null)
+    }
 }

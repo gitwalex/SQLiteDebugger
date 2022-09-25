@@ -1,4 +1,4 @@
-package com.gerwalex.sqlitedebugger
+package com.gerwalex.sqlitedebugger.tableview
 
 import android.database.Cursor
 import android.os.Bundle
@@ -6,14 +6,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.gerwalex.recyclerviewadapters.CursorAdapter
-import com.gerwalex.recyclerviewadapters.ViewHolder
+import com.gerwalex.sqlitedebugger.MainViewModel
 import com.gerwalex.sqlitedebugger.databinding.QueryresultFragmentBinding
+import com.gerwalex.sqlitedebugger.tableview.model.Cell
+import com.gerwalex.sqlitedebugger.tableview.model.ColumnHeader
+import com.gerwalex.sqlitedebugger.tableview.model.RowHeader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,42 +44,30 @@ class QueryResultFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mAdapter = QueryAdapter(LayoutInflater.from(view.context))
-        binding.recyclerView.adapter = mAdapter
+        val mAdapter = TableViewAdapter()
+        binding.tableview.setAdapter(mAdapter)
         viewLifecycleOwner.lifecycleScope.launch {
+            val colList: MutableList<ColumnHeader> = ArrayList()
+            val rowList: MutableList<RowHeader> = ArrayList()
+            val cellLists: MutableList<List<Cell>> = ArrayList()
             withContext(Dispatchers.IO) {
-                mAdapter.swap(viewModel.getDao().get(args.query))
-            }
-        }
-    }
-
-    inner class QueryAdapter(private val inflater: LayoutInflater) : CursorAdapter() {
-
-        override fun getItemViewType(position: Int): Int {
-            return R.layout.queryresult_items
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, mCursor: Cursor, position: Int) {
-            val tvs = holder.itemView.tag as List<*>
-            for ((index, value) in tvs.withIndex()) {
-                (value as TextView).text = mCursor.getString(index)
-            }
-        }
-
-        override fun onCreateViewHolder(viewGroup: ViewGroup, itemType: Int): ViewHolder {
-            val holder = super.onCreateViewHolder(viewGroup, itemType)
-
-            with(holder.itemView as ViewGroup) {
-                val tvs = ArrayList<TextView>()
-                cursor?.let {
-                    for (index in 0..it.columnCount) {
-                        val tv = inflater.inflate(R.layout.resultset_textview, holder.binding.ll, true)
-                        tvs.add(tv as TextView)
+                viewModel.getDao().query(args.query).use { c ->
+                    for (index in 0 until c.columnCount) {
+                        colList.add(ColumnHeader(index.toString(), c.getColumnName(index)))
+                    }
+                    if (c.moveToFirst()) {
+                        do {
+                            rowList.add(RowHeader(c.getString(0), c.getString(0)))
+                            val cellList: MutableList<Cell> = ArrayList()
+                            for (index in 0 until c.columnCount) {
+                                cellList.add(Cell(index.toString(), c.getString(index)))
+                            }
+                            cellLists.add(cellList)
+                        } while (c.moveToNext())
                     }
                 }
-                holder.itemView.tag = tvs
             }
-            return holder
+            mAdapter.setAllItems(colList, rowList, cellLists)
         }
     }
 }

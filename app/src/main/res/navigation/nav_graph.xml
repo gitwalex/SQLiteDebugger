@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/QueryresultFragment"
-        android:name="com.gerwalex.sqlitedebugger.QueryResultFragment"
+        android:name="com.gerwalex.sqlitedebugger.tableview.QueryResultFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/queryresult_fragment">
         <argument

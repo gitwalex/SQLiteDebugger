@@ -167,6 +167,9 @@ dependencies {
     //CAoC Custom Activity on Crash
     implementation 'cat.ereza:customactivityoncrash:2.4.0'
 
+    // TableLayoutRecycler
+    implementation 'com.github.evrencoskun:TableView:v0.8.9.4'
+
 
 
 }
