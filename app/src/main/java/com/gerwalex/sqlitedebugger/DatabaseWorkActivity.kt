@@ -24,9 +24,7 @@ class DatabaseWorkActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Zuerst Datanbankname ermitteln und ggfs. Uri kopieren
-        savedInstanceState?.let {
-            viewModel.dbname = it.getString("DBNAME")
-        } ?: run {
+if(        savedInstanceState == null){
             intent.extras?.getString("DBNAME")?.let {
                 viewModel.dbname = it
             } ?: intent.extras?.getString("URI")?.let { uriString ->
