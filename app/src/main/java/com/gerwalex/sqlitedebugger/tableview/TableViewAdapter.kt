@@ -178,29 +178,6 @@ class TableViewAdapter : AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() {
         return ColumnHeaderViewHolder(layout, tableView)
     }
 
-    suspend fun swap(c: Cursor) {
-        val colList: MutableList<ColumnHeader> = ArrayList()
-        val rowList: MutableList<RowHeader> = ArrayList()
-        val cellLists: MutableList<List<Cell>> = ArrayList()
-        withContext(Dispatchers.IO) {
-            for (index in 0 until c.columnCount) {
-                colList.add(ColumnHeader(index.toString(), c.getColumnName(index)))
-            }
-            if (c.moveToFirst()) {
-                do {
-                    rowList.add(RowHeader(c.getString(0), c.getString(0)))
-                    val cellList: MutableList<Cell> = ArrayList()
-                    for (index in 0 until c.columnCount) {
-                        cellList.add(Cell(index.toString(), c.getString(index)))
-                    }
-                    cellLists.add(cellList)
-                } while (c.moveToNext())
-            }
-        }
-        withContext(Dispatchers.Main) {
-            setAllItems(colList, rowList, cellLists)
-        }
-    }
 
     override fun onCreateCornerView(parent: ViewGroup): View {
         // Get Corner xml layout

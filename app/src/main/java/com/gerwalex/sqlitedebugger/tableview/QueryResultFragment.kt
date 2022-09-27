@@ -11,7 +11,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.gerwalex.sqlitedebugger.MainViewModel
 import com.gerwalex.sqlitedebugger.databinding.QueryresultFragmentBinding
+import com.gerwalex.sqlitedebugger.tableview.model.Cell
+import com.gerwalex.sqlitedebugger.tableview.model.ColumnHeader
+import com.gerwalex.sqlitedebugger.tableview.model.RowHeader
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -26,8 +31,6 @@ class QueryResultFragment : Fragment() {
         Log.d("gerwalex", "query: ${args.query}")
     }
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -41,7 +44,29 @@ class QueryResultFragment : Fragment() {
         val mAdapter = TableViewAdapter()
         binding.tableview.setAdapter(mAdapter)
         viewLifecycleOwner.lifecycleScope.launch {
-            mAdapter.swap(viewModel.getDao().query(args.query))
+            val colList: MutableList<ColumnHeader> = ArrayList()
+            val rowList: MutableList<RowHeader> = ArrayList()
+            val cellLists: MutableList<List<Cell>> = ArrayList()
+            withContext(Dispatchers.IO) {
+                viewModel.getDao().query(args.query).use { c ->
+                    for (index in 0 until c.columnCount) {
+                        colList.add(ColumnHeader(index.toString(), c.getColumnName(index)))
+                    }
+                    if (c.moveToFirst()) {
+                        do {
+                            rowList.add(RowHeader(c.getString(0), c.getString(0)))
+                            val cellList: MutableList<Cell> = ArrayList()
+                            for (index in 0 until c.columnCount) {
+                                cellList.add(Cell(index.toString(), c.getString(index)))
+                            }
+                            cellLists.add(cellList)
+                        } while (c.moveToNext())
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    mAdapter.setAllItems(colList, rowList, cellLists)
+                }
+            }
         }
     }
 }
