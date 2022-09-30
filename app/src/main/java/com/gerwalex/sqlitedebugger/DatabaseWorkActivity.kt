@@ -24,7 +24,7 @@ class DatabaseWorkActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Zuerst Datanbankname ermitteln und ggfs. Uri kopieren
-if(        savedInstanceState == null){
+        if (savedInstanceState == null) {
             intent.extras?.getString("DBNAME")?.let {
                 viewModel.dbname = it
             } ?: intent.extras?.getString("URI")?.let { uriString ->
@@ -43,14 +43,13 @@ if(        savedInstanceState == null){
         binding = DatabaseworkActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        if (viewModel.dbname == null) {
-            Snackbar.make(binding.root, R.string.noDatabase, Snackbar.LENGTH_LONG).show()
-        }
+        viewModel.dbname?.let {
+            val navController = findNavController(R.id.nav_host_fragment_content_main)
+            appBarConfiguration = AppBarConfiguration(navController.graph)
+            setupActionBarWithNavController(navController, appBarConfiguration)
+        } ?: Snackbar.make(binding.root, R.string.noDatabase, Snackbar.LENGTH_LONG).show()
     }
-
+    
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState.putString("DBNAME", viewModel.dbname)
@@ -74,7 +73,6 @@ if(        savedInstanceState == null){
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }
